@@ -7,10 +7,9 @@ export const socketIoMangeMent = (socket) => {
         console.log(roomId, "rooiD", socket.rooms)
     })
     socket.on('sendMessage', async (msg) => {
-        console.log(msg.description)
         socket.to(msg.senderId).emit('messageReciever', msg)
         const url = msg.applicant ? '/job/applicant/' + msg.applicationId : '/applied/' + msg.applicationId
-        await createNewNotification(msg.senderId,msg.description, url)
+        await createNewNotification(msg.senderId, msg.description, url)
         socket.to(msg.senderId).emit('notification', { title: msg.description })
     })
 
