@@ -97,6 +97,7 @@ export const filteredJobData = async ({
     page
 }) => {
     try {
+        console.log('filtered job getting')
 
         const filter = {
             ...(role && { role: { $regex: new RegExp(role, 'i') } }),
@@ -120,6 +121,7 @@ export const filteredJobData = async ({
             .skip(skip)
             .sort(sortData)
             .populate("employer")
+            console.log('filtered job getting' , filteredJobs.length)
         return filteredJobs;
     } catch (error) {
         throw error;
