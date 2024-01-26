@@ -134,3 +134,14 @@ export const changePassword = async (req,res)=>{
         res.status(500).send('internal server error')
     }
 }
+
+export const loginWithGoogle = async (req,res)=>{
+    try {
+        const {email} = req.body
+        const user = await findUserWithEmail(email)
+        const result = loggedData(user)
+        res.status(200).send(result)
+    } catch (error) {
+        res.status(500).send('internal server error')
+    }
+}

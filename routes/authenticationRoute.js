@@ -2,6 +2,7 @@ import express from 'express'
 import {
     changePassword,
     getNewOtpForUser,
+    loginWithGoogle,
     userLogin,
     userRegister,
     validateEmailOtp,
@@ -17,4 +18,8 @@ router.post('/login-user',userLogin)
 router.put('/change-pass',changePassword)
 
 router.post('/login-admin',adminLogin)
+
+
+
+router.post('/google-login',loginWithGoogle)
 export default router
