@@ -59,6 +59,7 @@ export const createPayment = async (user, plan, amount) => {
         }).save()
         return payment
     } catch (error) {
+        console.log(error)
         throw error
     }
 }
