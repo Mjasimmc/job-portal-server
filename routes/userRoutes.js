@@ -14,7 +14,7 @@ import {
     updateEmployeeProfile
 } from '../controller/user/employee.js';
 import {
-    createJobPost, getMyJobsWithManageData
+    createJobPost, getFilteredDataOfJobs, getJobDetails, getMyJobsWithManageData, removeJobsSavedList, saveJobs
 } from '../controller/user/job.js';
 import { authenticateUser } from '../controller/user/auth.js';
 import {
@@ -93,4 +93,13 @@ router.get('/get-self-plan-details',getSelfPlanDetailsWithUserId)
 
 
 router.get('/get-all-notification',getAllNotificationWithUserId)
+
+
+// authorized job data
+router.get('/get-job-data/:jobId', getJobDetails)
+router.post('/get-filtered-data', getFilteredDataOfJobs)
+
+router.get('/save-jobs/:jobId',saveJobs)
+router.get('/remove-jobs/:jobId',removeJobsSavedList)
+
 export default router

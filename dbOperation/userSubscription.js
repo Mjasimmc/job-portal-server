@@ -1,5 +1,14 @@
 import userPlanSchema from "../models/userSubscriptionPurschaseHistory.js"
 
+export const findAllUserPlansActive = async (req,res)=>{
+    try {
+        const date = new Date()
+        const plans = await userPlanSchema.find({expiryDate:{$gt:date}})
+        return plans
+    } catch (error) {
+        throw error
+    }
+}
 export const findUserPlanbWithUserId = async (user) => {
     try {
         const planHistory = await userPlanSchema.findOne({ user })

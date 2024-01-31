@@ -5,6 +5,7 @@ import {
 } from '../controller/admin/userMangement.js'
 import { createNewSubscriptionPlan, getAllPlanPurchases, getAllSubscriptionPlansData, getPlanWithId, updateSubscriptionPlan } from '../controller/admin/subscription.js'
 import { adminGetJobDetail, getAdminFilteredData } from '../controller/admin/jobManagement.js'
+import { chartDataofLastMonth, getDashboardData } from '../controller/admin/dashboard.js'
 const router = express()
 
 
@@ -23,5 +24,10 @@ router.get('/get-job-data/:jobId',adminGetJobDetail)
 
 
 router.get('/get-all-plan-purchases/:plan_id',getAllPlanPurchases)
+
+
+router.get('/get-home-data',getDashboardData)
+
+router.get('/chart-data',chartDataofLastMonth)
 
 export default router

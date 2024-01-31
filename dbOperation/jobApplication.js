@@ -1,4 +1,5 @@
 import jobApplicationSchema from "../models/jobApplicationSchema.js"
+import { addApplicantToJob } from "./job.js";
 
 
 export const applyJob = async (user, resume_id, coverLetter, job_id) => {
@@ -14,6 +15,7 @@ export const applyJob = async (user, resume_id, coverLetter, job_id) => {
             coverLetter,
             job_id
         }).save()
+        await addApplicantToJob(job_id,applicantId , user)
         return application
     } catch (error) {
         throw error

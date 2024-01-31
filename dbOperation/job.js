@@ -86,24 +86,24 @@ export const findAllJobsWithEmployerId = async (employer) => {
 
 
 
-
-
 export const filteredJobData = async ({
     role,
     jobType,
     company,
     locationQuery,
     salarySort,
-    page
+    page,
+    user
 }) => {
     try {
-        console.log('filtered job getting')
-
+      
         const filter = {
             ...(role && { role: { $regex: new RegExp(role, 'i') } }),
             ...(jobType && jobType.length > 0 && { jobType: { $in: jobType } }),
             ...(company && { companyName: { $regex: new RegExp(company, 'i') } }),
             ...(locationQuery && { location: { $regex: new RegExp(locationQuery, 'i') } }),
+            user: { $ne: user }, 
+            applicants: { $not: { $elemMatch: { user: user } } } // Exclude jobs where user is in applicants
         };
 
         const limitPost = 10 * (page || 1)
@@ -121,12 +121,13 @@ export const filteredJobData = async ({
             .skip(skip)
             .sort(sortData)
             .populate("employer")
-            console.log('filtered job getting' , filteredJobs.length)
+
         return filteredJobs;
     } catch (error) {
         throw error;
     }
 };
+
 
 
 export const adminFlteredJobData = async ({
@@ -164,6 +165,93 @@ export const adminFlteredJobData = async ({
             .sort(sortData)
             .populate("employer")
         return filteredJobs;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+export const addApplicantToJob = async (jobId, applicantionId, user) => {
+    try {
+        const job = await jobSchema.findOneAndUpdate(
+            { _id: jobId },
+            { $addToSet: { applicants: { applicantionId, user } } },
+            { new: true }
+        );
+
+        // Check if the job exists
+        if (!job) {
+            throw new Error('Job not found');
+        }
+
+        return job;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// Function to remove an applicant from the 'applicants' array
+export const removeApplicantFromJob = async (jobId, applicantId) => {
+    try {
+        const job = await jobSchema.findOneAndUpdate(
+            { _id: jobId },
+            { $pull: { applicants: { applicantionId: applicantId } } },
+            { new: true }
+        );
+
+        // Check if the job exists
+        if (!job) {
+            throw new Error('Job not found');
+        }
+
+        return job;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+export const getAllJobPosts = async ()=>{
+    try {
+        const jobs = await jobSchema.find()
+        return jobs
+    } catch (error) {
+        throw error
+    }
+}
+
+
+export const addToSavedList = async (jobId, userId) => {
+    try {
+        const updatedJob = await jobSchema.findOneAndUpdate(
+            { _id: jobId, saved: { $ne: userId } },
+            { $push: { saved: userId } },
+            { new: true }
+        );
+
+        if (!updatedJob) {
+            throw new Error('Job not found or already in saved list');
+        }
+
+        return updatedJob;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const removeFromSavedList = async (jobId, userId) => {
+    try {
+        const updatedJob = await jobSchema.findOneAndUpdate(
+            { _id: jobId, saved: userId },
+            { $pull: { saved: userId } },
+            { new: true }
+        );
+
+        if (!updatedJob) {
+            throw new Error('Job not found or not in saved list');
+        }
+
+        return updatedJob;
     } catch (error) {
         throw error;
     }

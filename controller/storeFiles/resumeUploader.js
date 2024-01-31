@@ -22,6 +22,7 @@ export const uploadResume = async (req, res, next) => {
 export const getAllResumesWithUserId = async (req, res) => {
     try {
         const resumes = await getEmployeeResumes(req.user._id)
+        console.log(resumes)
         res.status(200).send(resumes);
     } catch (error) {
         console.error(error);

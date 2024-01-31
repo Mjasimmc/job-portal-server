@@ -1,5 +1,5 @@
 import { findEmployerWithUser } from "../../dbOperation/employer.js";
-import { createJobPostWithUserId, findJobWithId, filteredJobData, findAllJobsWithEmployerId } from "../../dbOperation/job.js";
+import { createJobPostWithUserId, findJobWithId, filteredJobData, findAllJobsWithEmployerId, addToSavedList, removeFromSavedList } from "../../dbOperation/job.js";
 
 
 
@@ -71,16 +71,18 @@ export const getJobDetails = async (req, res) => {
 
 export const getFilteredDataOfJobs = async (req, res) => {
     try {
-        const { role, jobTypes, company, location, salarySort , page } = req.body;
+        const { role, jobTypes, company, location, salarySort, page } = req.body;
+        const user = req.user ? req.user._id : null
         const filteredJobs = await filteredJobData({
             role,
-            jobType:jobTypes,
+            jobType: jobTypes,
             company,
-            locationQuery:location,
+            locationQuery: location,
             salarySort,
-            page
+            page,
+            user
         });
-        
+
         res.status(200).send(filteredJobs);
     } catch (error) {
         console.error(error);
@@ -89,16 +91,37 @@ export const getFilteredDataOfJobs = async (req, res) => {
 };
 
 
-export const getMyJobsWithManageData = async (req,res)=>{
+export const getMyJobsWithManageData = async (req, res) => {
     try {
-      
+
         const employer = await findEmployerWithUser(req.user._id)
 
-        if(employer){
-            const jobs=  await findAllJobsWithEmployerId(employer._id)
+        if (employer) {
+            const jobs = await findAllJobsWithEmployerId(employer._id)
             return res.status(200).send(jobs)
         }
         res.status(200).send([])
+    } catch (error) {
+        res.status(500).send("internal server error")
+    }
+}
+
+
+export const saveJobs = async (req, res) => {
+    try {
+        const { jobId } = req.params
+        const updatedJob = await addToSavedList(jobId, req.user._id)
+        res.status(200).send(updatedJob)
+    } catch (error) {
+        res.status(500).send("internal server error")
+    }
+}
+
+export const removeJobsSavedList = async (req, res) => {
+    try {
+        const { jobId } = req.params
+        const updatedJob = await removeFromSavedList(jobId, req.user._id)
+        res.status(200).send(updatedJob)
     } catch (error) {
         res.status(500).send("internal server error")
     }

@@ -3,7 +3,7 @@ import StripeImport from 'stripe';
 import { findUserWithUserId } from "../../dbOperation/userMangement.js";
 const stripe = StripeImport(process.env.STRIPE_SECRET_KEY)
 import Razorpay from "razorpay";
-import { createPayment, completePayment } from "../../dbOperation/payment.js";
+import { createPayment, completePayment, getUserPaymentHistory } from "../../dbOperation/payment.js";
 // const crypto = require('crypto');
 import crypto from 'crypto'
 import { createNewPlan, findUserPlanbWithUserId, updatePlan } from "../../dbOperation/userSubscription.js";
@@ -63,22 +63,18 @@ export const completePaymentValidationAndCredit = async (req, res) => {
         const { orderId, razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
         const validatePayment = verifyRazorpaySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature, process.env.RAZORPAY_SECRET);
         if (!validatePayment) return res.status(404).send('Unauthorized payment');
-        console.log(orderId)
+        console.log(orderId, req.body)
         const payment = await completePayment(orderId, {
             razorpay_payment_id, razorpay_order_id, razorpay_signature
         });
 
         const planExist = await findUserPlanbWithUserId(req.user._id);
         let updatedPlan = null;
+        let durationDate = new Date();
+        durationDate = durationDate.setMonth(durationDate.getMonth() + payment.plan.duration);
         if (!planExist) {
-            let durationDate = new Date();
-            durationDate.setMonth(durationDate.getMonth() + payment.plan.duration);
             updatedPlan = await createNewPlan(req.user._id, payment.plan.jobPostLimit, durationDate);
         } else {
-            const existingExpiryDate = planExist.expiryDate || new Date();
-            console.log(payment)
-            const durationDate = new Date(existingExpiryDate);
-            durationDate.setMonth(durationDate.getMonth() + payment.plan.duration);
             updatedPlan = await updatePlan(req.user._id, payment.plan.jobPostLimit, durationDate);
         }
         res.status(200).send(updatedPlan);
@@ -91,7 +87,8 @@ export const completePaymentValidationAndCredit = async (req, res) => {
 export const getSelfPlanDetailsWithUserId = async (req, res) => {
     try {
         const plan = await findUserPlanbWithUserId(req.user._id)
-        res.status(200).send(plan)
+        const paymentHistory = await getUserPaymentHistory(req.user._id)
+        res.status(200).send({ plan, paymentHistory })
     } catch (error) {
         console.error('Error creating checkout session:', error);
         res.status(500).send('Internal Server Error');

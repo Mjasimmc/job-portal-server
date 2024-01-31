@@ -58,7 +58,23 @@ const jobSchema = mongoose.Schema({
     },
     skills: [String],
     benefits: [String],
-    requirements: [String]
+    requirements: [String],
+    applicants:[
+        {
+            applicantionId:{
+                type:String,
+                ref:'job-applicant',
+                required:true
+            },
+            user: {
+                type: mongoose.Schema.ObjectId,
+                ref: 'user',
+                required:true
+            }
+
+        }
+    ],
+    saved:[String]
 }, {
     timestamps: true
 });

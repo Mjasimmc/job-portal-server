@@ -4,7 +4,7 @@ import { createNewNotification } from "./dbOperation/notification.js";
 export const socketIoMangeMent = (socket) => {
     socket.on('createRoom', (roomId) => {
         socket.join(roomId)
-        console.log(roomId, "rooiD", socket.rooms)
+        // console.log(roomId, "rooiD", socket.rooms)
     })
     socket.on('sendMessage', async (msg) => {
         socket.to(msg.senderId).emit('messageReciever', msg)
