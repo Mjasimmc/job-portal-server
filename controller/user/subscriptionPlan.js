@@ -37,6 +37,7 @@ export const userGetPlanDataWithId = async (req, res) => {
 export const paymentRazorpay = async (req, res) => {
     try {
         const { amount, planId } = req.body
+        console.log(amount,planId)
         const instance = new Razorpay({
             key_id: process.env.RAZORPAY_KEY_ID,
             key_secret: process.env.RAZORPAY_SECRET,
