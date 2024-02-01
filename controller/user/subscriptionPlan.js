@@ -7,10 +7,7 @@ import { createPayment, completePayment, getUserPaymentHistory } from "../../dbO
 // const crypto = require('crypto');
 import crypto from 'crypto'
 import { createNewPlan, findUserPlanbWithUserId, updatePlan } from "../../dbOperation/userSubscription.js";
-const instance = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_SECRET,
-});
+
 const verifyRazorpaySignature = (orderId, razorpayPaymentId, razorpaySignature, secret) => {
     const hmac = crypto.createHmac('sha256', secret);
     hmac.update(`${orderId}|${razorpayPaymentId}`);
@@ -49,11 +46,15 @@ export const paymentRazorpay = async (req, res) => {
             currency: "INR",
             receipt: orderCreated._id,
         };
+        const instance = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_SECRET,
+        });
         // const order = await  instance.orders.create(options);
         instance.orders.create(options, (err, order) => {
             console.log(order, err);
             if (err) {
-                console.log(err)
+                console.log(err , instance)
                 return res.status(500).send("Some error occured")
             };
 
