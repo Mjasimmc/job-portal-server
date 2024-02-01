@@ -80,7 +80,6 @@ export const completePaymentValidationAndCredit = async (req, res) => {
         const { orderId, razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
         const validatePayment = verifyRazorpaySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature, process.env.RAZORPAY_SECRET);
         if (!validatePayment) return res.status(404).send('Unauthorized payment');
-        console.log(orderId, req.body)
         const payment = await completePayment(orderId, {
             razorpay_payment_id, razorpay_order_id, razorpay_signature
         });
@@ -96,6 +95,7 @@ export const completePaymentValidationAndCredit = async (req, res) => {
         }
         res.status(200).send(updatedPlan);
     } catch (error) {
+       
         console.error('Error creating checkout session:', error);
         res.status(500).send('Internal Server Error');
     }
@@ -107,6 +107,7 @@ export const getSelfPlanDetailsWithUserId = async (req, res) => {
         const paymentHistory = await getUserPaymentHistory(req.user._id)
         res.status(200).send({ plan, paymentHistory })
     } catch (error) {
+        
         console.error('Error creating checkout session:', error);
         res.status(500).send('Internal Server Error');
     }
