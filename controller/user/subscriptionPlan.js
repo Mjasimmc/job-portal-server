@@ -49,23 +49,23 @@ export const paymentRazorpay = async (req, res) => {
             currency: "INR",
             receipt: orderCreated._id,
         };
-        // const order = await instance.orders.create(options);
-        // console.log(order)
-        // if (!order) return res.status(500).send("Some error occured");
-        const order = {
-            id: 'order_NVTNPzNSy7cyec',
-            entity: 'order',
-            amount: 900,
-            amount_paid: 0,
-            amount_due: 900,
-            currency: 'INR',
-            receipt: '65bb14de1f39c69bc3506a64',
-            offer_id: null,
-            status: 'created',
-            attempts: 0,
-            notes: [],
-            created_at: 1706759390
-          }
+        const order = await instance.orders.create(options);
+        console.log(order)
+        if (!order) return res.status(500).send("Some error occured");
+        // const order = {
+        //     id: 'order_NVTNPzNSy7cyec',
+        //     entity: 'order',
+        //     amount: 900,
+        //     amount_paid: 0,
+        //     amount_due: 900,
+        //     currency: 'INR',
+        //     receipt: '65bb14de1f39c69bc3506a64',
+        //     offer_id: null,
+        //     status: 'created',
+        //     attempts: 0,
+        //     notes: [],
+        //     created_at: 1706759390
+        //   }
         res.status(200).send({ order, key_id: process.env.RAZORPAY_KEY_ID, orderId: orderCreated._id });
     } catch (error) {
         console.log(error)
