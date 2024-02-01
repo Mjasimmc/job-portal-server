@@ -7,7 +7,10 @@ import { createPayment, completePayment, getUserPaymentHistory } from "../../dbO
 // const crypto = require('crypto');
 import crypto from 'crypto'
 import { createNewPlan, findUserPlanbWithUserId, updatePlan } from "../../dbOperation/userSubscription.js";
-
+const instance = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_SECRET,
+});
 const verifyRazorpaySignature = (orderId, razorpayPaymentId, razorpaySignature, secret) => {
     const hmac = crypto.createHmac('sha256', secret);
     hmac.update(`${orderId}|${razorpayPaymentId}`);
@@ -37,13 +40,8 @@ export const userGetPlanDataWithId = async (req, res) => {
 export const paymentRazorpay = async (req, res) => {
     try {
         const { amount, planId } = req.body
-        console.log(amount,planId)
-        console.log(process.env.RAZORPAY_KEY_ID ,process.env.RAZORPAY_KEY_ID)
-        const instance = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID,
-            key_secret: process.env.RAZORPAY_SECRET,
-        });
-        console.log(instance , "instance")
+       
+        
         const orderCreated = await createPayment(req.user._id, planId, amount)
         console.log(orderCreated , "order created")
         const options = {
