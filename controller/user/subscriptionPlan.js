@@ -54,7 +54,7 @@ export const paymentRazorpay = async (req, res) => {
         instance.orders.create(options, (err, order) => {
             console.log(order, err);
             if (err) {
-                console.log(err , instance)
+                console.log(err , 'instance')
                 return res.status(500).send("Some error occured")
             };
 
