@@ -40,33 +40,25 @@ export const userGetPlanDataWithId = async (req, res) => {
 export const paymentRazorpay = async (req, res) => {
     try {
         const { amount, planId } = req.body
-       
-        
+
+
         const orderCreated = await createPayment(req.user._id, planId, amount)
-        console.log(orderCreated , "order created")
+        console.log(orderCreated, "order created")
         const options = {
             amount: amount * 100, // amount in smallest currency unit
             currency: "INR",
             receipt: orderCreated._id,
         };
-        const order = await instance.orders.create(options);
-        console.log(order)
-        if (!order) return res.status(500).send("Some error occured");
-        // const order = {
-        //     id: 'order_NVTNPzNSy7cyec',
-        //     entity: 'order',
-        //     amount: 900,
-        //     amount_paid: 0,
-        //     amount_due: 900,
-        //     currency: 'INR',
-        //     receipt: '65bb14de1f39c69bc3506a64',
-        //     offer_id: null,
-        //     status: 'created',
-        //     attempts: 0,
-        //     notes: [],
-        //     created_at: 1706759390
-        //   }
-        res.status(200).send({ order, key_id: process.env.RAZORPAY_KEY_ID, orderId: orderCreated._id });
+        // const order = await  instance.orders.create(options);
+        instance.orders.create(options, (err, order) => {
+            console.log(order, err);
+            if (err) {
+                console.log(err)
+                return res.status(500).send("Some error occured")
+            };
+
+            res.status(200).send({ order, key_id: process.env.RAZORPAY_KEY_ID, orderId: orderCreated._id });
+        });
     } catch (error) {
         console.log(error)
         res.status(500).send('internal server error')
@@ -95,7 +87,7 @@ export const completePaymentValidationAndCredit = async (req, res) => {
         }
         res.status(200).send(updatedPlan);
     } catch (error) {
-       
+
         console.error('Error creating checkout session:', error);
         res.status(500).send('Internal Server Error');
     }
