@@ -43,7 +43,9 @@ export const paymentRazorpay = async (req, res) => {
             key_id: process.env.RAZORPAY_KEY_ID,
             key_secret: process.env.RAZORPAY_SECRET,
         });
+        console.log(instance , "instance")
         const orderCreated = await createPayment(req.user._id, planId, amount)
+        console.log(orderCreated , "order created")
         const options = {
             amount: amount * 100, // amount in smallest currency unit
             currency: "INR",
@@ -107,7 +109,7 @@ export const getSelfPlanDetailsWithUserId = async (req, res) => {
         const paymentHistory = await getUserPaymentHistory(req.user._id)
         res.status(200).send({ plan, paymentHistory })
     } catch (error) {
-        
+
         console.error('Error creating checkout session:', error);
         res.status(500).send('Internal Server Error');
     }
