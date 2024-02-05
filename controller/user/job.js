@@ -1,5 +1,5 @@
 import { findEmployerWithUser } from "../../dbOperation/employer.js";
-import { createJobPostWithUserId, findJobWithId, filteredJobData, findAllJobsWithEmployerId, addToSavedList, removeFromSavedList } from "../../dbOperation/job.js";
+import { createJobPostWithUserId, findJobWithId, filteredJobData, findAllJobsWithEmployerId, addToSavedList, removeFromSavedList, findJobWithEmployer, stopRecruiting } from "../../dbOperation/job.js";
 
 
 
@@ -94,18 +94,30 @@ export const getFilteredDataOfJobs = async (req, res) => {
 export const getMyJobsWithManageData = async (req, res) => {
     try {
 
-        const employer = await findEmployerWithUser(req.user._id)
+        const employer = req.user.employer
 
         if (employer) {
-            const jobs = await findAllJobsWithEmployerId(employer._id)
+            const jobs = await findAllJobsWithEmployerId(employer)
             return res.status(200).send(jobs)
         }
         res.status(200).send([])
     } catch (error) {
+        console.log(error)
         res.status(500).send("internal server error")
     }
 }
+export const jobDataWithEmployerId = async (req, res) => {
+    try {
+        const employer = req.user.employer
+        const { jobId } = req.params
+        const jobData = await findJobWithEmployer(jobId, employer)
+        console.log(jobData, "jobId")
+        if (!jobData) return res.status(404).send("not found")
+        res.status(200)
+    } catch (error) {
 
+    }
+}
 
 export const saveJobs = async (req, res) => {
     try {
@@ -124,5 +136,17 @@ export const removeJobsSavedList = async (req, res) => {
         res.status(200).send(updatedJob)
     } catch (error) {
         res.status(500).send("internal server error")
+    }
+}
+
+
+
+export const stopRecruitment = async (req, res) => {
+    try {
+        const { jobId } = req.params
+        const updatedJobData = stopRecruiting(jobId, req.user.employer)
+        res.status(200).send(updatedJobData)
+    } catch (error) {
+        res.status(500).send('internal server error')
     }
 }

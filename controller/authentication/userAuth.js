@@ -5,6 +5,7 @@ import {
     findUserWithEmail,
     findUserWithName,
     findUserWithPhone,
+    findUserWithUserId,
     updatePassword,
     validateEmail
 } from "../../dbOperation/userMangement.js"
@@ -32,11 +33,11 @@ const generateOtp = () => Math.floor(Math.random() * 1000000)
 
 export const loggedData = (data) => {
     try {
-        const { name, email, _id, phone } = data
+        const { name, email, _id, phone, employer, employee } = data
         const token = createJwtToken({
             name, _id, email, phone
         })
-        const result = { name, email, token, phone , _id }
+        const result = { name, email, token, phone, _id, employer, employee }
         return result
     } catch (error) {
         throw error
@@ -72,7 +73,7 @@ export const validateEmailOtp = async (req, res) => {
         }
         const user = await validateEmail(data.user)
         const result = loggedData(user)
-        res.status(200).send(result)    
+        res.status(200).send(result)
     } catch (error) {
         res.status(500).send('internal server error')
     }
@@ -88,15 +89,15 @@ export const userLogin = async (req, res) => {
         if (!user) {
             return res.status(401).send("user not found")
         }
-        const passMatch = await comparePassword(password , user.password)
+        const passMatch = await comparePassword(password, user.password)
         if (!passMatch) {
             return res.status(401).send("password not match")
         }
 
-        if(!user.email.validated){
+        if (!user.email.validated) {
             return res.status(203).send('email not validated')
         }
-        
+
         const result = loggedData(user)
         res.status(200).send(result)
     } catch (error) {
@@ -104,44 +105,70 @@ export const userLogin = async (req, res) => {
     }
 }
 
-export const getNewOtpForUser = async (req,res)=>{
+export const getNewOtpForUser = async (req, res) => {
     try {
-        const {email} = req.body
+        const { email } = req.body
         const emailExist = await findUserWithEmail(email)
-        if(!emailExist){
+        if (!emailExist) {
             return res.status(404).send("user not found")
         }
         const otp = generateOtp()
         await sendMail(email, "Your Otp Is " + otp)
-        const date = new Date()
+   
         const sendOtp = await updateOtpWithNewOtp(emailExist._id, otp)
-        res.status(200).send({otp_id:sendOtp,date})
-    } catch (error) {   
+        res.status(200).send({ otp_id: sendOtp, })
+    } catch (error) {
         res.status(500).send('internal server error')
     }
 }
 
-
-export const changePassword = async (req,res)=>{
+export const genrateNewOtpWithId = async (req, res) => {
     try {
-      const {email,password} = req.body
-      const hashPass = await hashPassword(password)
-        const user = await updatePassword(email,hashPass)
-        const result = loggedData(user)
-        res.status(200).send(result)     
+        const { otpId } = req.body
+        const otpData = await getOtpWithId(otpId)
+        const otp = generateOtp()
+        await sendMail(otpData.user.email.mail_id, "Your Otp Is " + otp)
+        const sendOtp = await updateOtpWithNewOtp(otpData.user._id, otp)
+        res.status(200).send({ otp_id: sendOtp })
     } catch (error) {
         console.log(error)
         res.status(500).send('internal server error')
     }
 }
 
-export const loginWithGoogle = async (req,res)=>{
+
+export const changePassword = async (req, res) => {
     try {
-        const {email} = req.body
+        const { email, password } = req.body
+        const hashPass = await hashPassword(password)
+        const user = await updatePassword(email, hashPass)
+        const result = loggedData(user)
+        res.status(200).send(result)
+    } catch (error) {
+        console.log(error)
+        res.status(500).send('internal server error')
+    }
+}
+
+export const loginWithGoogle = async (req, res) => {
+    try {
+        const { email } = req.body
         const user = await findUserWithEmail(email)
         const result = loggedData(user)
         res.status(200).send(result)
     } catch (error) {
+        res.status(500).send('internal server error')
+    }
+}
+
+export const checkOtpIdExist = async (req, res) => {
+    try {
+        const { otpId } = req.params
+        const otpData = await getOtpWithId(otpId)
+        console.log(otpData)
+        res.status(200).send({valid:!!otpData , updatedAt:otpData.updatedAt})
+    } catch (error) {
+        console.log(error)
         res.status(500).send('internal server error')
     }
 }

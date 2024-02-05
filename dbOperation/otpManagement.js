@@ -15,6 +15,7 @@ export const saveOtp = async (otp, user) => {
 export const getOtpWithId = async (otp_id) => {
     try {
         const data = await otpSchema.findOne({ _id: otp_id })
+        .populate('user')
         return data
     } catch (error) {
         throw error

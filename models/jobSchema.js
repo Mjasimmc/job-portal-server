@@ -74,7 +74,11 @@ const jobSchema = mongoose.Schema({
 
         }
     ],
-    saved:[String]
+    saved:[String],
+    status:{
+        type:Boolean,
+        default:true
+    }
 }, {
     timestamps: true
 });

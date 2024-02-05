@@ -1,6 +1,8 @@
 import express from 'express'
 import {
     changePassword,
+    checkOtpIdExist,
+    genrateNewOtpWithId,
     getNewOtpForUser,
     loginWithGoogle,
     userLogin,
@@ -18,8 +20,9 @@ router.post('/login-user',userLogin)
 router.put('/change-pass',changePassword)
 
 router.post('/login-admin',adminLogin)
-
-
-
 router.post('/google-login',loginWithGoogle)
+
+router.post('/resend-otp',genrateNewOtpWithId)
+
+router.get('/validate-otp-id/:otpId',checkOtpIdExist)
 export default router

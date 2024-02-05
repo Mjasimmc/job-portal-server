@@ -15,8 +15,9 @@ export const applyJob = async (user, resume_id, coverLetter, job_id) => {
             coverLetter,
             job_id
         }).save()
-        await addApplicantToJob(job_id,applicantId , user)
-        return application
+        const applied = await addApplicantToJob(job_id, applicantId, user)
+        console.log(applied)
+        return applied
     } catch (error) {
         throw error
     }
@@ -46,19 +47,18 @@ export const employeeFindAllAppliedJobs = async (user) => {
 export const getAllApplicantWithJobId = async (job_id) => {
     try {
         const applicants = await jobApplicationSchema.find({ job_id })
-            .populate('job_id user')
-
+            .populate('job_id user', "_id name ")
         return applicants
     } catch (error) {
         throw error
     }
 }
 
-
 export const findApplicantWithId = async (_id) => {
     try {
         const applicant = await jobApplicationSchema.findOne({ _id })
             .populate('job_id user')
+            console.log(_id)
         return applicant
     } catch (error) {
         throw error

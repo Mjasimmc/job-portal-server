@@ -63,10 +63,18 @@ export const findJobWithId = async (_id) => {
         throw error
     }
 }
-
-export const findJobWithEmployer = async (_id) => {
+export const getJobDetailsWithUserId = async (_id, employer) => {
     try {
-        const job = await jobSchema.findOne({ _id })
+        const job = await jobSchema.findOne({ _id, employer }).populate('applicants.user applicants.applicantionId')
+        return job
+    } catch (error) {
+        throw error
+    }
+}
+
+export const findJobWithEmployer = async (_id, employer) => {
+    try {
+        const job = await jobSchema.findOne({ _id, employer })
         return job
     } catch (error) {
         throw error
@@ -96,13 +104,13 @@ export const filteredJobData = async ({
     user
 }) => {
     try {
-      
+
         const filter = {
             ...(role && { role: { $regex: new RegExp(role, 'i') } }),
             ...(jobType && jobType.length > 0 && { jobType: { $in: jobType } }),
             ...(company && { companyName: { $regex: new RegExp(company, 'i') } }),
             ...(locationQuery && { location: { $regex: new RegExp(locationQuery, 'i') } }),
-            user: { $ne: user }, 
+            user: { $ne: user },
             applicants: { $not: { $elemMatch: { user: user } } } // Exclude jobs where user is in applicants
         };
 
@@ -178,12 +186,9 @@ export const addApplicantToJob = async (jobId, applicantionId, user) => {
             { $addToSet: { applicants: { applicantionId, user } } },
             { new: true }
         );
-
-        // Check if the job exists
         if (!job) {
             throw new Error('Job not found');
         }
-
         return job;
     } catch (error) {
         throw error;
@@ -211,7 +216,7 @@ export const removeApplicantFromJob = async (jobId, applicantId) => {
 };
 
 
-export const getAllJobPosts = async ()=>{
+export const getAllJobPosts = async () => {
     try {
         const jobs = await jobSchema.find()
         return jobs
@@ -256,3 +261,21 @@ export const removeFromSavedList = async (jobId, userId) => {
         throw error;
     }
 };
+
+export const stopRecruiting = async (jobId , employer) => {
+    try {
+        const updatedJob = await jobSchema.findOneAndUpdate(
+            { _id: jobId , employer },
+            { $set: { status: false } },
+            { new: true }
+        );
+
+        if (!updatedJob) {
+            throw new Error('Job not found or not in saved list');
+        }
+
+        return updatedJob;
+    } catch (error) {
+        throw error;
+    }
+}
