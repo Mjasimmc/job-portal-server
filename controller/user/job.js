@@ -1,5 +1,5 @@
 import { findEmployerWithUser } from "../../dbOperation/employer.js";
-import { createJobPostWithUserId, findJobWithId, filteredJobData, findAllJobsWithEmployerId, addToSavedList, removeFromSavedList, findJobWithEmployer, stopRecruiting } from "../../dbOperation/job.js";
+import { createJobPostWithUserId, findJobWithId, filteredJobData, findAllJobsWithEmployerId, addToSavedList, removeFromSavedList, findJobWithEmployer, stopRecruiting, continueRecruiting } from "../../dbOperation/job.js";
 
 
 
@@ -25,6 +25,8 @@ export const createJobPost = async (req, res) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         const requiredFields = [role, jobType, qualification, experience, description, companyName, salary, location, deadline, contactEmail, skills];
+
+        console.log(requiredFields.map((val)=> !val))
         if (requiredFields.some(field => !field)) {
             return res.status(400).send("Please provide all required fields.");
         }
@@ -145,6 +147,15 @@ export const stopRecruitment = async (req, res) => {
     try {
         const { jobId } = req.params
         const updatedJobData = stopRecruiting(jobId, req.user.employer)
+        res.status(200).send(updatedJobData)
+    } catch (error) {
+        res.status(500).send('internal server error')
+    }
+}
+export const continueRecruitment = async (req, res) => {
+    try {
+        const { jobId } = req.params
+        const updatedJobData = continueRecruiting(jobId, req.user.employer)
         res.status(200).send(updatedJobData)
     } catch (error) {
         res.status(500).send('internal server error')

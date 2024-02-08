@@ -14,6 +14,7 @@ import {
     updateEmployeeProfile
 } from '../controller/user/employee.js';
 import {
+    continueRecruitment,
     createJobPost,
     getFilteredDataOfJobs,
     getJobDetails,
@@ -57,6 +58,7 @@ router.get('/get-employee-profile', getEmployeeData)
 router.post('/create-employer-post', createJobPost)
 
 router.get('/stop-recruitment/:jobId', stopRecruitment)
+router.get('/continue-recruitment/:jobId', continueRecruitment)
 
 
 

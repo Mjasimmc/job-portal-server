@@ -279,3 +279,20 @@ export const stopRecruiting = async (jobId , employer) => {
         throw error;
     }
 }
+export const continueRecruiting = async (jobId , employer) => {
+    try {
+        const updatedJob = await jobSchema.findOneAndUpdate(
+            { _id: jobId , employer },
+            { $set: { status: true } },
+            { new: true }
+        );
+
+        if (!updatedJob) {
+            throw new Error('Job not found or not in saved list');
+        }
+
+        return updatedJob;
+    } catch (error) {
+        throw error;
+    }
+}
