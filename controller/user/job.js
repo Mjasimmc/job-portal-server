@@ -1,5 +1,6 @@
 import { findEmployerWithUser } from "../../dbOperation/employer.js";
 import { createJobPostWithUserId, findJobWithId, filteredJobData, findAllJobsWithEmployerId, addToSavedList, removeFromSavedList, findJobWithEmployer, stopRecruiting, continueRecruiting } from "../../dbOperation/job.js";
+import { updateDecrementPlan } from "../../dbOperation/userSubscription.js";
 
 
 
@@ -21,7 +22,7 @@ export const createJobPost = async (req, res) => {
             requirements,
             vacancy
         } = req.body;
-
+        await updateDecrementPlan(req.user._id)
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         const requiredFields = [role, jobType, qualification, experience, description, companyName, salary, location, deadline, contactEmail, skills];

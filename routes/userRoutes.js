@@ -77,6 +77,9 @@ router.get('/get-appicant-data/:applicantId', getApplicantDataWithId)
 router.get('/get-all-plan-datas', getAllSubscriptionsForUser)
 router.get('/get-plandata-with-id/:planId', userGetPlanDataWithId)
 router.post('/credit-uploading-validate-payment', completePaymentValidationAndCredit)
+
+
+
 router.post('/create-razorpay-instance', paymentRazorpay)
 router.post('/send-message-applicant', sendLiveMessage)
 router.get('/get-all-messages/:applicantId', getAllMessages)

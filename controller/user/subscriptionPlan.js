@@ -86,6 +86,8 @@ export const completePaymentValidationAndCredit = async (req, res) => {
         } else {
             updatedPlan = await updatePlan(req.user._id, payment.plan.jobPostLimit, durationDate);
         }
+
+        
         res.status(200).send(updatedPlan);
     } catch (error) {
 
