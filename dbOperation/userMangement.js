@@ -55,7 +55,7 @@ export const findUserWithEmail = async (email) => {
 }
 export const findUserWithUserId = async (_id) => {
     try {
-        const user = await userSchema.findOne({ _id})
+        const user = await userSchema.findOne({ _id })
         return user
     } catch (error) {
         throw error
@@ -102,7 +102,7 @@ export const findAllUsersDate = async () => {
 
 export const updatePassword = async (email, password) => {
     try {
-        const updatedPass = await userSchema.findOneAndUpdate({ "email.mail_id":email }, {
+        const updatedPass = await userSchema.findOneAndUpdate({ "email.mail_id": email }, {
             $set: {
                 password
             }
@@ -139,3 +139,28 @@ export const updateEmployee = async (user, employee) => {
     }
 }
 
+export const blockUser = async (userId) => {
+    try {
+        const updateEmployee = await userSchema.findOneAndUpdate({ _id: userId }, {
+            $set: {
+                block: true
+            }
+        },{new:true})
+        return updateEmployee
+    } catch (error) {
+        throw error
+    }
+}
+
+export const unBlockUser = async (userId) => {
+    try {
+        const updateEmployee = await userSchema.findOneAndUpdate({ _id: userId }, {
+            $set: {
+                block: false
+            }
+        },{new:true})
+        return updateEmployee
+    } catch (error) {
+        throw error
+    }
+}

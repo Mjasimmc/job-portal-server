@@ -6,7 +6,6 @@ export const authenticateUser = async (req,res)=>{
         const user = await findUserWithUserId(req.user._id)
         const response = loggedData(user)
         res.status(200).send(response)
-
     } catch (error) {
         res.status(500).send("internal server error")
     }

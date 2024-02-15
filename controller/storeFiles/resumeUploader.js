@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 import fs from 'fs';
 import { createResume, getEmployeeResumes } from '../../dbOperation/resumeOperation.js';
 config();
-export const uploadResume = async (req, res, next) => {
+export const uploadResume = async (req, res) => {
     try {
         const { resume, name } = req.body;
         const currentDate = new Date();
@@ -22,7 +22,6 @@ export const uploadResume = async (req, res, next) => {
 export const getAllResumesWithUserId = async (req, res) => {
     try {
         const resumes = await getEmployeeResumes(req.user._id)
-        console.log(resumes)
         res.status(200).send(resumes);
     } catch (error) {
         console.error(error);
